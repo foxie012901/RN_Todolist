@@ -1,7 +1,8 @@
 import {
     HANDLE_STORE_CHANGE,
     ON_CHANGE_DATA,
-    OPEN_ID
+    OPEN_ID,
+    INIT_LIST_ACTION
 } from "./actionTypes";
 
 export const getHandleStoreChange = value => ({
@@ -16,4 +17,8 @@ export const getOnChangeData = () => ({
 export const getOpenId = (index) => ({
     type: OPEN_ID,
     index
+})
+export const initListAction = (data) => ({
+    type: INIT_LIST_ACTION,
+    data
 })

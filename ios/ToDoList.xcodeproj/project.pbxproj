@@ -20,6 +20,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* ToDoListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ToDoListTests.m */; };
 		874854E46796FB9B73B9B1CA /* libPods-ToDoList.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80541D9C94DB319B038967A5 /* libPods-ToDoList.a */; };
 		8BDD32E2FDD933D15AACC2DA /* libPods-ToDoList-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50F29FF1DB294E5E8EADAEC1 /* libPods-ToDoList-tvOS.a */; };
+		FCD8E3842331BBAA008FAC63 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FCD8E3832331BBAA008FAC63 /* Ionicons.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F4277B6C6B86BC2FD06C0A07 /* Pods-ToDoList-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoList-tvOS.release.xcconfig"; path = "Target Support Files/Pods-ToDoList-tvOS/Pods-ToDoList-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		FCD8E3832331BBAA008FAC63 /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* ToDoList */ = {
 			isa = PBXGroup;
 			children = (
+				FCD8E3832331BBAA008FAC63 /* Ionicons.ttf */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -345,6 +348,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				FCD8E3842331BBAA008FAC63 /* Ionicons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

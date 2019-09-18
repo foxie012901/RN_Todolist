@@ -7,7 +7,7 @@ export default StyleSheet.create({
         padding: 10,
         justifyContent: 'center',
         alignItems: "center",
-        backgroundColor: "#f5fcff",
+        backgroundColor: "lightblue",
         paddingTop: 50,
     },
     tInput: {
@@ -17,14 +17,14 @@ export default StyleSheet.create({
         borderBottomWidth: 1,
         borderLeftWidth: 1,
         borderRightWidth: 1,
-        borderColor: 'lightblue',
+        borderColor: '#eee',
         borderRadius: 5,
     },
     row: {
         fontSize: 24,
         padding: 42,
         borderWidth: 1,
-        borderColor: 'lightblue',
+        borderColor: '#eee',
         flexDirection: 'row',
         position: 'relative'
     },

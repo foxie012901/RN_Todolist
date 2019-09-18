@@ -1,16 +1,12 @@
 import {
     HANDLE_STORE_CHANGE,
     ON_CHANGE_DATA,
-    OPEN_ID
+    OPEN_ID,
+    INIT_LIST_ACTION
 } from "./actionTypes";
 const defaultState = {
     inputValue: '',
-    list: [
-        1,
-        2,
-        3,
-        4
-    ]
+    list: [ ]
 }
 
 export default (state = defaultState, action) => {
@@ -33,6 +29,14 @@ export default (state = defaultState, action) => {
     if (action.type === OPEN_ID) {
         const newState = JSON.parse(JSON.stringify(state))
         newState.list.splice(action.index, 1)
+
+        return newState
+    }
+
+
+    if (action.type === INIT_LIST_ACTION) {
+        const newState = JSON.parse(JSON.stringify(state))
+        newState.list = action.data
 
         return newState
     }

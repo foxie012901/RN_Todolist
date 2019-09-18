@@ -10,15 +10,21 @@ import {
   YellowBox
 
 } from 'react-native';
-import styles from "./TodolistStyle.js";
+
+import { NetGet } from "../../util/request";
+import axios from 'axios'
+
+import TodolistUI from "./TodolistUI";
 
 import store from "../../store";
 
 import {
   getHandleStoreChange,
   getOnChangeData,
-  getOpenId
+  getOpenId,
+  initListAction
 } from "../../store/actionCreators";
+
 
 export default class Todolist extends Component {
   constructor(props) {
@@ -31,49 +37,49 @@ export default class Todolist extends Component {
     store.subscribe(this._handleStoreChange)
   }
 
+  _doRequest = (url) => {
+    // console.warn('_dorequest')
+    return NetGet(url, null).then(res => {
+      // console.warn(res)
+      let { status, data } = res
+      if (status === 200) {
+
+        // console.warn(data)
+        const action = initListAction(data)
+        store.dispatch(action)
+      }
+      // console.warn(this.state.imgList)
+    })
+  }
+
+  async componentDidMount() {
+
+    // axios.get('http://localhost.charlesproxy.com:3000/list.json').then((res) => {
+    //   console.log('axios')
+    //   console.warn(res)
+    // })
+    await Promise.all([
+      this._doRequest('/list.json')
+    ])
+    // console.warn('didmount')
+
+  }
+
   render() {
     return (
-      <View style={styles.content}>
-        <View style={{ width: "100%", marginBottom: 10 }}>
-          <TextInput
-            placeholder={'Write Something...'}
-            placeholderTextColor={'#BBBBBB'}
-            style={styles.tInput}
-            onChangeText={this._handleInputChange}
-            value={this.state.inputValue}
-          />
-
-          <TouchableOpacity
-            style={{ marginTop: 10 }}
-            onPress={this._onChangeData}
-          >
-            <View style={styles.btnSty}><Text style={styles.btnTxtSty}>Click Me</Text></View>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          keyExtractor={({ index }) => { return index }}
-          data={this.state.list}
-          renderItem={this._renderItem}
-          style={{ width: "100%" }}
+      <View style={{ width: '100%', height: '100%' }}>
+        <TodolistUI
+          inputValue={this.state.inputValue}
+          list={this.state.list}
+          _handleInputChange={this._handleInputChange}
+          _onChangeData={this._onChangeData}
+          _openId={this._openId}
         />
       </View >
     );
   }
 
-  _renderItem = ({ item, index }) => {
-    // console.warn(index)
-    return (
-      <View style={styles.row}>
-        <Text >{item}</Text>
-        <TouchableOpacity
-          onPress={() => this._openId(index)}
-          style={styles.rowTouch}
-        >
-          <Text style={styles.rowTouchTxt}>delete</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+
   _handleStoreChange = () => {
     this.setState(store.getState())
   }

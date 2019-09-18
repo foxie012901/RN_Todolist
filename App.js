@@ -1,114 +1,81 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
-import React, {Fragment} from 'react';
+import React, { Component } from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
   View,
   Text,
-  StatusBar,
+  StyleSheet
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import TabNavigator from "react-native-tab-navigator";
 
-const App = () => {
-  return (
-    <Fragment>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Fragment>
-  );
-};
+import IconFont from 'react-native-vector-icons/Ionicons'
+
+import Todolist from "./app/components/Todolist/Todolist";
+import PickerThree from "./app/components/PickerThree/PickerThree";
+import DropDown from "./app/components/DropDown/DropDown"
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedTab: 'todolist' // 选中的tab栏名称
+
+    };
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+
+        <TabNavigator>
+
+          <TabNavigator.Item
+            selected={this.state.selectedTab === 'todolist'}
+            title='todolist'
+            renderIcon={() => <IconFont name={'ios-globe'} size={25} color={'gray'} />} // 未选中状态下，展示的图标
+            renderSelectedIcon={() => <IconFont name={'ios-globe'} size={25} color={'#0079ff'} />} // 选中状态下展示的图标
+            onPress={() => this.setState({ selectedTab: 'todolist' })}
+          >
+            <Todolist />
+          </TabNavigator.Item>
+
+
+
+
+          <TabNavigator.Item
+            selected={this.state.selectedTab === 'pickerthree'}
+            title='pickerthree'
+            renderIcon={() => <IconFont name={'ios-settings'} size={25} color={'gray'} />} // 未选中状态下，展示的图标
+            renderSelectedIcon={() => <IconFont name={'ios-settings'} size={25} color={'#0079ff'} />} // 选中状态下展示的图标
+            onPress={() => this.setState({ selectedTab: 'pickerthree' })}
+          >
+            <PickerThree />
+          </TabNavigator.Item>
+
+
+          <TabNavigator.Item
+            selected={this.state.selectedTab === 'dropdown'}
+            title='dropdown'
+            renderIcon={() => <IconFont name={'ios-paper'} size={25} color={'gray'} />} // 未选中状态下，展示的图标
+            renderSelectedIcon={() => <IconFont name={'ios-paper'} size={25} color={'#0079ff'} />} // 选中状态下展示的图标
+            onPress={() => this.setState({ selectedTab: 'dropdown' })}
+          >
+            <DropDown />
+          </TabNavigator.Item>
+
+
+        </TabNavigator>
+
+
+        {/* <Text>todolist</Text> */}
+      </View>
+    );
+  }
+}
+
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
 
-export default App;
+});
