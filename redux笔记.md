@@ -179,4 +179,144 @@ export default const Todolist = (props) =>{
         </View>
     )
 }
-````
+```
+==============================================================
+## redux-thunk redux中间件 增强redux性能
+    安装redux中间件 插件  - yarn add redux-thunk
+    概念:dispatch一个action之后，到达reducer之前，进行一些额外的操作，就需要用到middleware。你可以利用 Redux middleware 来进行日志记录、创建崩溃报告、调用异步接口或者路由等等。
+    换言之，中间件都是对store.dispatch()的增强
+```js redux  index.js
+    import { createStore,applyMiddleware ,compose} from "redux";
+    import thunk from "redux-thunk";
+
+    import reducer from "./reducer";
+
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+    const enhancer = composeEnhancers(
+        applyMiddleware(thunk)
+    )
+    const store = createStore(
+        reducer,
+        enhancer
+    )
+
+    export default store
+```
+
+1. 首先安装redux thunk的安装 
+2. 我们在创建store的时候使用中间件thunk
+```js redux index.js 使用thunk中间件,参见官方文档配置,然后通过创建enhancer把它传递给createStore的第二个参数,就使得我们现在的仓库,即使用了thunk的中间件,又使用了redux-devtools开发者工具
+    import { createStore,applyMiddleware ,compose} from "redux";
+    import thunk from "redux-thunk";
+
+    import reducer from "./reducer";
+
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+    const enhancer = composeEnhancers(
+        applyMiddleware(thunk)
+    )
+    const store = createStore(
+        reducer,
+        enhancer
+    )
+
+    export default store
+```
+
+3. 配置好redux thunk环境之后,他可以使得我们在action里去写异步的代码了
+    当我们的组件挂在完成的时候,以前创建一个action只能是一个js的对象,但是使用redux thunk之后即使返回数据不是一个对象了,而是一个函数,也可以通过store.dispatch把这个函数发给store了.这样,我们的store仓库不仅可以管理数据,也可以管理方法,如果不用thunk,那么代码会报错,提示action必须是一个对象
+```js
+    componentDidMount(){
+        const action = getTodolist();
+        store.dispatch(action)
+    }
+```
+    引申:优化代码,把请求数据封装进redux的store里
+
+4. 当store发现dispatch接收到了一个函数,它就会干一件事,帮你执行以下action对应的函数,比如是一个请求数据的函数,action对应的函数会自动继承dispatch,所以在action中的函数也可以继续生成新的action对象并通过dispatch给store
+```js
+export const getTodolist = (url) => {
+    //实际上,当调取gettodolist生成内容是一个函数的时候,这个函数能够接受到store的dispattch方法,所以直接写一个dispatch就可以使用了
+    return (dispatch) => {
+        NetGet(url, null).then(res => {
+            // console.warn(res)
+            let { status, data } = res
+            if (status === 200) {
+                console.log(data)
+                const action = initListAction(data)
+                dispatch(action)
+            }
+        })
+
+    }
+}
+```
+
+5. 优势,当我们把请求数据等操作放进生命周期函数,它会变得越来越负责,越来越多,组件变得越来越大,所以推荐把复杂的业务逻辑和异步请求拆分到一个地方去管理的,现在我们就可以通过redux thunk把这些操作放到actionCreators.js里面去管理了,放在这里带来了额外的好处,当我们去做自动化测试的时候,我们在测这些操作的时候会非常简单,他比测试一个组件的生命周期函数要简单的多. 
+
+6. 总结,我们用redux thunk对dispatch进行了升级, 默认dispatch只能接受对象,升级后可以接受函数了;redux的中间件有很多,具体baidu 
+
+=======================================================================================
+## redux-saga redux中间件 增强redux性能
+    概念:redux-saga 是一个用于管理应用程序 Side Effect（副作用，例如异步获取数据，访问浏览器缓存等）的 library，它的目标是让副作用管理更容易，执行更高效，测试更简单，在处理故障时更容易。
+
+可以想像为，一个 saga 就像是应用程序中一个单独的线程，它独自负责处理副作用。 redux-saga 是一个 redux 中间件，意味着这个线程可以通过正常的 redux action 从主应用程序启动，暂停和取消，它能访问完整的 redux state，也可以 dispatch redux action。
+
+redux-saga 使用了 ES6 的 Generator 功能，让异步的流程更易于读取，写入和测试。（如果你还不熟悉的话，这里有一些介绍性的链接） 通过这样的方式，这些异步的流程看起来就像是标准同步的 Javascript 代码。（有点像 async/await，但 Generator 还有一些更棒而且我们也需要的功能）。
+
+你可能已经用了 redux-thunk 来处理数据的读取。不同于 redux thunk，你不会再遇到回调地狱了，你可以很容易地测试异步流程并保持你的 action 是干净的。
+
+### 为什么会有 redux-saga
+    为什么会有redux-saga
+中间件用过redux-thunk，也用过redux-promise-middleware，原理都很简单。
+
+thunk就是简单的action作为函数，在action进行异步操作，发出新的action。
+而promise只是在action中的payload作为一个promise，中间件内部进行处理之后，发出新的action。
+
+这两个简单也容易理解，但是当业务逻辑多且复杂的时候会发生什么情况呢？我们的action越来越复杂，payload越来越长，当然我们可以分离开来单独建立文件去处理逻辑，但是实质上还是对redux的action和reducer进行了污染，让它们变得不纯粹了，action就应该作为一个信号，而不是处理逻辑，reducer里面处理要好一些，但是同样会生出几个多余的action类型进行处理，而且也只能是promise，不能做复杂的业务处理。
+
+redux-saga将进行异步处理的逻辑剥离出来，单独执行，利用generator实现异步处理。
+
+### 安装saga 创建saga 使用saga 搭建saga
+1. 安装saga -yarn add redux-saga
+2. redux的index中创建saga中间件并使用
+```js redux 的 index.js 
+    import { createStore,applyMiddleware ,compose} from "redux";
+    import reducer from "./reducer";
+
+    import createSagaMiddleware from "redux-saga";  //引入saga的创建中间件
+    import todoSagas from './sagas'  //引入sagas.js
+
+    const sagaMiddleware = createSagaMiddleware() // 创建saga中间件
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;  //配置调试器
+    const enhancer = composeEnhancers(
+        applyMiddleware(sagaMiddleware) //添加saga中间件到enhancer里
+    )
+    const store = createStore(
+        reducer,
+        enhancer
+    )
+    sagaMiddleware.run(todoSagas)  //开启saga中间件
+
+    export default store
+```
+3. 创建 sagas.js 并使用generator函数初始化格式
+   generator 函数的概念 ===> ES6
+        1、什么是 Generator 函数
+
+        在Javascript中，一个函数一旦开始执行，就会运行到最后或遇到return时结束，运行期间不会有其它代码能够打断它，也不能从外部再传入值到函数体内
+
+        而Generator函数（生成器）的出现使得打破函数的完整运行成为了可能，其语法行为与传统函数完全不同
+
+        Generator函数是ES6提供的一种异步编程解决方案，形式上也是一个普通函数，但有几个显著的特征：
+        详情请看下面地址的介绍:
+        https://www.cnblogs.com/rogerwu/p/10764046.html
+
+```js store下创建 sagas.js
+    function* mySaga() {
+
+    }
+
+    export default mySaga
+```
+4. 使用saga 封装异步请求数据

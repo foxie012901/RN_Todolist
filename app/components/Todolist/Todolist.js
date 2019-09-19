@@ -7,7 +7,8 @@ import {
   Button,
   FlatList,
   TouchableOpacity,
-  YellowBox
+  YellowBox,
+  ActivityIndicator
 
 } from 'react-native';
 
@@ -22,7 +23,9 @@ import {
   getHandleStoreChange,
   getOnChangeData,
   getOpenId,
-  initListAction
+  initListAction,
+  getTodolist,
+  getInitList,
 } from "../../store/actionCreators";
 
 
@@ -32,7 +35,12 @@ export default class Todolist extends Component {
     YellowBox.ignoreWarnings([
       'Warning: Each child in a list should have a unique'
     ])
-    this.state = store.getState()
+    let { inputValue, list } = store.getState()
+    this.state = {
+      inputValue,
+      list,
+      isShow: true
+    }
 
     store.subscribe(this._handleStoreChange)
   }
@@ -44,37 +52,69 @@ export default class Todolist extends Component {
       let { status, data } = res
       if (status === 200) {
 
-        // console.warn(data)
+        console.log(data)
         const action = initListAction(data)
         store.dispatch(action)
       }
       // console.warn(this.state.imgList)
     })
+
+
+    //thunk 中间件释放
+    // const action = getTodolist(url)
+    // store.dispatch(action)
+
   }
 
-  async componentDidMount() {
-
+  // 封装 request.js使用的 
+  // async
+  componentDidMount() {
     // axios.get('http://localhost.charlesproxy.com:3000/list.json').then((res) => {
     //   console.log('axios')
     //   console.warn(res)
     // })
-    await Promise.all([
-      this._doRequest('/list.json')
-    ])
+
+    //封装request.js使用的
+    // await Promise.all([
+    //   this._doRequest('/list.json')
+    // ])
+
+    //thunk中间件释放
+    // await Promise.all([
+    //   this._doRequest('/list.json')
+    // ])
+
+    //saga 中间件释放
+    const action = getInitList();
+    store.dispatch(action)
+
+
+    this.setState({
+      isShow: false
+    })
+
     // console.warn('didmount')
 
   }
 
   render() {
+    let Loading = (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator animating={this.state.isShow} /></View>
+    )
+    let PageW = (
+      <TodolistUI
+        inputValue={this.state.inputValue}
+        list={this.state.list}
+        _handleInputChange={this._handleInputChange}
+        _onChangeData={this._onChangeData}
+        _openId={this._openId}
+      />
+    )
     return (
       <View style={{ width: '100%', height: '100%' }}>
-        <TodolistUI
-          inputValue={this.state.inputValue}
-          list={this.state.list}
-          _handleInputChange={this._handleInputChange}
-          _onChangeData={this._onChangeData}
-          _openId={this._openId}
-        />
+        {
+          this.state.isShow ? Loading : PageW
+        }
       </View >
     );
   }

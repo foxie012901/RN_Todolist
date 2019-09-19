@@ -2,7 +2,8 @@ import {
     HANDLE_STORE_CHANGE,
     ON_CHANGE_DATA,
     OPEN_ID,
-    INIT_LIST_ACTION
+    INIT_LIST_ACTION,
+    GET_INIT_LIST
 } from "./actionTypes";
 const defaultState = {
     inputValue: '',
@@ -33,13 +34,17 @@ export default (state = defaultState, action) => {
         return newState
     }
 
-
     if (action.type === INIT_LIST_ACTION) {
         const newState = JSON.parse(JSON.stringify(state))
         newState.list = action.data
 
         return newState
     }
+    // else {
+    //     const newState = JSON.parse(JSON.stringify(state))
+    //     newState.list =['接口加载失败']
+    //     return newState
+    // }
 
 
     return state

@@ -45,7 +45,7 @@ export default class TodolistUI extends Component {
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    keyExtractor={({ index }) => { return index }}
+                    keyExtractor={(item, index) => index.toString()}
                     data={list}
                     renderItem={this._renderItem}
                     style={{ width: "100%" }}
@@ -53,7 +53,9 @@ export default class TodolistUI extends Component {
             </View>
         );
     }
-
+    _keyFlatlist = e => {
+        console.log(e)
+    }
     _renderItem = ({ item, index }) => {
         // console.warn(index)
         return (
