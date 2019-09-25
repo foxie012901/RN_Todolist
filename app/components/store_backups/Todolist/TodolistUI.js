@@ -24,7 +24,7 @@ export default class TodolistUI extends Component {
             inputValue,
             list,
             _handleInputChange,
-            _handleInitList,
+            _onChangeData,
         } = this.props
         return (
             <View style={styles.content}>
@@ -33,13 +33,13 @@ export default class TodolistUI extends Component {
                         placeholder={'Write Something...'}
                         placeholderTextColor={'#BBBBBB'}
                         style={styles.tInput}
-                        value={inputValue}
                         onChangeText={_handleInputChange}
+                        value={inputValue}
                     />
 
                     <TouchableOpacity
                         style={{ marginTop: 10 }}
-                        onPress={_handleInitList}
+                        onPress={_onChangeData}
                     >
                         <View style={styles.btnSty}><Text style={styles.btnTxtSty}>Click Me</Text></View>
                     </TouchableOpacity>
@@ -47,7 +47,6 @@ export default class TodolistUI extends Component {
                 <FlatList
                     keyExtractor={(item, index) => index.toString()}
                     data={list}
-                    // data={[1,2,3,4,5]}
                     renderItem={this._renderItem}
                     style={{ width: "100%" }}
                 />
@@ -63,7 +62,7 @@ export default class TodolistUI extends Component {
             <View style={styles.row}>
                 <Text >{item}</Text>
                 <TouchableOpacity
-                    onPress={() => this.props._handleDelList(index)}
+                    onPress={() => this.props._openId(index)}
                     style={styles.rowTouch}
                 >
                     <Text style={styles.rowTouchTxt}>delete</Text>

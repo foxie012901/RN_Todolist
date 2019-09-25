@@ -1,9 +1,9 @@
-export const HANDLE_STORE_CHANGE = 'handle_store_change'
+export const CHANGE_INPUT_VALUE = 'change_input_value'
 
-export const ON_CHANGE_DATA = 'on_change_data'
+export const INIT_LIST = 'init_list'
 
-export const OPEN_ID = 'open_id'
+export const DELETE_LIST_INDEX = 'delete_init_index'
 
-export const INIT_LIST_ACTION = 'init_list_action'
+export const GET_DATA = 'get_data'
 
-export const GET_INIT_LIST = 'get_init_list'
+export const PUT_DATA_TO_LIST = 'put_data_to_list'

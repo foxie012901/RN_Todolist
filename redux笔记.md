@@ -185,23 +185,6 @@ export default const Todolist = (props) =>{
     安装redux中间件 插件  - yarn add redux-thunk
     概念:dispatch一个action之后，到达reducer之前，进行一些额外的操作，就需要用到middleware。你可以利用 Redux middleware 来进行日志记录、创建崩溃报告、调用异步接口或者路由等等。
     换言之，中间件都是对store.dispatch()的增强
-```js redux  index.js
-    import { createStore,applyMiddleware ,compose} from "redux";
-    import thunk from "redux-thunk";
-
-    import reducer from "./reducer";
-
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
-    const enhancer = composeEnhancers(
-        applyMiddleware(thunk)
-    )
-    const store = createStore(
-        reducer,
-        enhancer
-    )
-
-    export default store
-```
 
 1. 首先安装redux thunk的安装 
 2. 我们在创建store的时候使用中间件thunk
@@ -235,6 +218,10 @@ export default const Todolist = (props) =>{
 
 4. 当store发现dispatch接收到了一个函数,它就会干一件事,帮你执行以下action对应的函数,比如是一个请求数据的函数,action对应的函数会自动继承dispatch,所以在action中的函数也可以继续生成新的action对象并通过dispatch给store
 ```js
+export const initListAction = data => ({
+    type: INIT_LIST_ACTION,
+    data
+})
 export const getTodolist = (url) => {
     //实际上,当调取gettodolist生成内容是一个函数的时候,这个函数能够接受到store的dispattch方法,所以直接写一个dispatch就可以使用了
     return (dispatch) => {
@@ -243,7 +230,7 @@ export const getTodolist = (url) => {
             let { status, data } = res
             if (status === 200) {
                 console.log(data)
-                const action = initListAction(data)
+                const action = initListAction(data) // initListAction(data)
                 dispatch(action)
             }
         })
@@ -320,3 +307,115 @@ redux-saga将进行异步处理的逻辑剥离出来，单独执行，利用gene
     export default mySaga
 ```
 4. 使用saga 封装异步请求数据
+
+```js
+import { takeEvery, put } from "redux-saga/effects";
+import { GET_INIT_LIST } from "./actionTypes";
+import { initListAction } from "./actionCreators";
+import axios from 'axios'
+
+function* getInitList() {
+    try {
+        const res = yield axios.get('http://localhost.charlesproxy.com:3000/list.json');
+        let { status, data } = res.data
+        if (status === 200) {
+            const action = initListAction(data)
+            yield put(action)  //因为saga没有dispatch,所以得用put,效果一样 ,加yield表示等action处理完成之后再继续往下执行代码
+        }
+    } catch (e) {
+        console.log('list.json 网络请求失败')
+    }
+}
+
+function* mySaga() {
+    yield takeEvery(GET_INIT_LIST, getInitList) //当saga收到GET_INIT_LIST,就会执行getInitList方法
+    //当我们派发action的时候,不仅仅是reducer能收到,sagas也能收到,一旦sagas接收到就会根据需求执行方法
+}
+
+export default mySaga
+
+```
+==============================================================
+## react-redux
+
+### 核心API Provider
+    Provider 的意思是这个提供器连接了store,那么Provider里面所有的组件都有能力获得store里的内容了
+```js 根组件 Main.js
+    import { Provider } from "react-redux";
+    import store from './app/store'
+
+    render(){
+        return (
+            <Provider store={store}>
+                <组件 />
+            </Provider>
+        )
+    }
+```
+
+### 核心API connect
+    export default connect(null,null) (TodoList) 他的意思是,让我的todolist组件和store进行连接
+    connect的方法就是让组件和store做连接
+    因为之前通过Provider把我们的根组件包裹起来了,并绑定了store,我们的todolist组件在根组件下,那么就可以通过connect方法把我们的组件和store进行连接
+```js 需要连接store的组件.js
+    import {connect} from 'react-redux'
+
+    class 组件 extends Component{
+        constructor(props){
+            super(props)
+            this.state={
+
+            }
+        }
+        componentDidMount(){
+
+        }
+        render(){
+            return (
+                <组件
+                    inputValue = {this.props.inpuValue}
+                    _handleInputChange={this.props._handleInputChange}
+
+                    //这里使用this.props而不是this.state了,
+                    //因为我们在下面的mapStateToProps里面把store里的数据绑定在props里面了
+                    list={this.props.list}
+                />
+            )
+        }
+    
+
+    }
+const mapStateToProps = (state) => {
+    //这个函数会默认接受一个state,就是store里面的数据,他会return 一个对象出去
+    return {
+        inputValue:state.inputValue ,
+        list:state.list
+    }
+}
+
+const mapDispatchToProps =(dispatch)=>{
+    return {
+        _handleInputChange(value){
+            // console.warn(e)
+            const action = {
+                type:'change_input_value',
+                value
+            }
+            dispatch(action)
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
+//我要让我们的组件跟store做一个连接,那么久需要一个规则,规则就在mapStateToProps这个函数里面
+// mapStateToProps字面翻译就是把store里面的数据映射到组件的props里面
+//我们要修改store里的数据 可以通过mapDispatchToProps 来实现
+//mapDispatchToProps ,dispatch 值得就是store.dispatch, props
+//在mapDispatchToProps里返回对象,对象里创建action,然后通过dispatch发送给store进行处理
+
+
+```
+
+### react-redux 总结
+    todolist是一个ui组件他只有渲染代码,connect把ui组件和业务逻辑mapDispatchToProps和mapStateToProps结合,
+    所以connect执行返回的结果是一个容器组件 ,容器组件可以理解成,他就是存一些业务逻辑,然后通过把UI组件进行包装调用UI组件,在调用的时候,它把数据和方法都准备好.
