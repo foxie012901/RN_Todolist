@@ -419,3 +419,72 @@ export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
 ### react-redux 总结
     todolist是一个ui组件他只有渲染代码,connect把ui组件和业务逻辑mapDispatchToProps和mapStateToProps结合,
     所以connect执行返回的结果是一个容器组件 ,容器组件可以理解成,他就是存一些业务逻辑,然后通过把UI组件进行包装调用UI组件,在调用的时候,它把数据和方法都准备好.
+
+
+=========================================================
+
+## 整合reducer,通过combineReducers来实现
+    原理: 我们在研发中时,我们的数据和数据的处理都放在reducer.js了,随着功能的开发,数据量会越来越大,一个文件的代码超过300行,就说明设计是有问题的,所以我们不能让reducer变得那么大.
+    解决办法: 我们可以把这一个reducer拆成很多个小的reducer进行管理
+
+### 步骤
+1. 打开app/components下的某个组件文件夹下,创建一个store文件夹,在文件夹下创建reducer.js,actionType.js,actionCreators.js这些文件,并关联好
+2. 在app/store下的reducer.js,创建关联关系
+```js app/store/reducer.js
+import { combineReducers } from "redux";
+
+import todolistReducer from "../components/Todolist/store/reducer";
+
+export default combineReducers({
+    todolist:todolistReducer // 这里的todolist就是我们在组件中要使用的关键字
+})
+```
+3. 组件中使用.
+```js
+import { getChangeInputValue,
+    InitList,
+    delInitListIndex,
+    getData,
+    putDataToList } from './store/actionCreators'
+
+const mapStateToProps = (state) => {
+    return {
+        inputValue: state.todolist.inputValue,
+        list: state.todolist.list
+        //这里注意,默认写法是state.indexvalue,但是我们把数据拆分开扔进组件文件夹里了额,并在主reducer文件中创建了关联,关联孟子是todolist,所以state.后接todolist.再接数据即可
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        _handleInputChange(value) {
+            // console.warn('handleinputchange')
+            const action = getChangeInputValue(value)
+            dispatch(action)
+        },
+    }
+}
+```
+4. 补充一些问题 注意各个页面之间的文件关系,关联路径
+    比如 actionTypes.js actionCreator.js再各个页面之间的关联路径
+
+5. 补充4 ,裂解,actionTypes.js actionCreator.js ,应该随着拆分的reducer.js走,各个组件有各自的文件关系,然后在主reducer.js中进行附reducer.js的整合,就可以实现整体的数据关联关系.
+
+6. 继续优化,可简写路径的代码方式,在小的reducer.js同目录下创建index.is
+```js  小reducer.js同目录下的index.js
+import todolistReducer from "./reducer";
+
+export { todolistReducer } 
+```
+```js  主reducer.js文件
+import { combineReducers } from "redux";
+
+import {todolistReducer} from "../components/Todolist/store";
+//因为小的那边创建了index.js所以就节省下/reducer.js了,在那个index下配置了关联关系
+const reducer =  combineReducers({
+    todolist:todolistReducer
+})
+
+export default reducer
+```
+7. 更多优化详见本demo todolist组件.

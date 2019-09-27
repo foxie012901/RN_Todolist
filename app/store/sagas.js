@@ -1,6 +1,6 @@
 import { takeEvery, put } from "redux-saga/effects";
-import { PUT_DATA_TO_LIST } from "./actionTypes";
-import { getData } from "./actionCreators";
+import { PUT_DATA_TO_LIST } from "../components/Todolist/store/actionTypes";
+import { getData } from "../components/Todolist/store/actionCreators";
 
 import axios from 'axios'
 
@@ -10,7 +10,7 @@ function* mySaga() {
 }
 
 function* getInitList() {
-    console.warn('saga')
+    // console.warn('saga')
     try {
         const res = yield axios.get('http://localhost.charlesproxy.com:3000/list.json');
         let { status, data } = res.data

@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 
 import TodolistUI from './TodolistUI'
-import {
-    getChangeInputValue,
-    InitList,
-    delInitListIndex,
-    getData,
-    putDataToList
-} from "../../store/actionCreators";
+// import {
+//     getChangeInputValue,
+//     InitList,
+//     delInitListIndex,
+//     putDataToList
+// } from "./store/actionCreators";
+
+import { actionCreators } from "./store";
 
 import { connect } from "react-redux";
 
@@ -30,6 +31,9 @@ class Todolist extends Component {
     }
 
     componentDidMount() {
+        //流程: 通过_getdata里的putDataToList,dispatch给store,saga下拦截到,
+        //执行里面的getData,在actionCreator下获取接口数据并赋值给data,
+        //然后dispatch给action,reducer进行条件处理,传递个store
         this.props._getData()
         this.setState({
             isShow: false
@@ -60,29 +64,30 @@ class Todolist extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        inputValue: state.inputValue,
-        list: state.list
+        inputValue: state.todolist.inputValue,
+        list: state.todolist.list
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         _handleInputChange(value) {
-            const action = getChangeInputValue(value)
-            dispatch(action)
+            // console.warn('handleinputchange')
+            // const action = getChangeInputValue(value)
+            dispatch(actionCreators.getChangeInputValue(value))
         },
         _handleInitList() {
             // console.warn('1111')
-            const action = InitList()
+            const action = actionCreators.InitList()
             dispatch(action)
         },
         _handleDelList(index) {
-            const action = delInitListIndex(index)
+            const action = actionCreators.delInitListIndex(index)
             dispatch(action)
         },
-        _getData(){
-            console.warn('put data')
-            const action = putDataToList()
+        _getData() {
+            // console.warn('put data')
+            const action = actionCreators.putDataToList()
             dispatch(action)
         }
     }
