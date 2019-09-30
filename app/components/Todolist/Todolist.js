@@ -63,9 +63,11 @@ class Todolist extends Component {
 }
 
 const mapStateToProps = (state) => {
+    // console.warn(typeof(state.todolist.get('list')))
+    // console.warn(typeof(state.todolist.get('list').toJS()))
     return {
-        inputValue: state.todolist.inputValue,
-        list: state.todolist.list
+        inputValue: state.todolist.get('inputValue'),
+        list: state.todolist.get('list').toJS()
     }
 }
 

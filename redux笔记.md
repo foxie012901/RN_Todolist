@@ -68,7 +68,13 @@
     import store from './store' // 我们平时的完整写法,我们也可以不写.js,甚至我们创建的名称是index的话作为默认,也可以不写
     constructor(props){
         super(props)
-        this.state = store.getState()  //getState,是store提供的通过这个方法获取store里的数据
+        let {inputValue,list} = store.getState()
+        this.state={
+            inputValue,
+            list,
+            data:[]
+        }
+        // this.state = store.getState()  //getState,是store提供的通过这个方法获取store里的数据
     }    
     store.subscribe(this._handleStoreChange)//我们的组件去订阅store，就是说，只要store里的数据改变，subscribe里面就会执行某些事件
 
